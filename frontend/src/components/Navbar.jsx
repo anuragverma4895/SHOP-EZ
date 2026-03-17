@@ -74,7 +74,7 @@ const Navbar = () => {
                         {user ? (
                             <div className="flex items-center space-x-6 text-white text-sm font-medium">
                                 <Link to={user.isAdmin ? "/admin" : "/profile"} className="hover:text-indigo-200 transition-colors">
-                                    {user.name.split(' ')[0]}
+                                    {user.name}
                                 </Link>
                                 <button onClick={handleLogout} className="hover:text-indigo-200 transition-colors">
                                     Logout

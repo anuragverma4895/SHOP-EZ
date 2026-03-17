@@ -89,8 +89,14 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateUser = (data) => {
+        setUser(data);
+        localStorage.setItem('userInfo', JSON.stringify(data));
+        setupAxiosAuth(data);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, updateUser, loading }}>
             {!loading && children}
         </AuthContext.Provider>
     );
