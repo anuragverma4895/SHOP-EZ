@@ -10,11 +10,6 @@ A full-stack e-commerce platform with AI-powered product recommendations.
 | Backend | Node.js (Express) + MongoDB | 5000 |
 | AI Service | Python (FastAPI) | 8000 |
 
-## 🚀 Quick Start (One-Click Deploy)
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/anuragverma4895/SHOP-EZ)
-
-### Local Setup
 
 ### Backend
 ```bash
