@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: shop-ez-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        fromConfig: true
+      - key: JWT_SECRET
+        fromConfig: true
+      - key: FRONTEND_URL
+        fromConfig: true
+      - key: AI_SERVICE_URL
+        fromConfig: true

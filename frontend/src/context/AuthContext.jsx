@@ -6,6 +6,12 @@ const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
+// Set up axios defaults
+if (import.meta.env.VITE_API_BASE_URL) {
+    axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
+}
+axios.defaults.withCredentials = true;
+
 // Set up axios default headers from stored token
 const setupAxiosAuth = (userData) => {
     if (userData && userData.token) {
