@@ -1,5 +1,13 @@
 node_modules/
-.env
+.env*
 __pycache__/
 *.pyc
 dist/
+.dist/
+.DS_Store
+Thumbs.db
+*.log
+ai_service/out.txt
+.vercel
+.next/
+build/
