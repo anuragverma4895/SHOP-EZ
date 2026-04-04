@@ -28,7 +28,7 @@ services:
     rootDir: ai_service
 
   # 3. Frontend Service (Static Site) - Deploying from frontend folder
-  - type: static
+  - type: static_site
     name: shop-ez-frontend
     env: static
     plan: free
@@ -51,7 +51,7 @@ envVarGroups:
       - key: frontend_url
         fromService:
           name: shop-ez-frontend
-          type: static
+          type: static_site
           property: host
       - key: ai_service_url
         fromService:
