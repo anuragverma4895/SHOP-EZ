@@ -1,12 +1,11 @@
 services:
-  # 1. Backend Service (Node.js)
+  # 1. Backend Service (Node.js) - Deploying from Root
   - type: web
     name: shop-ez-backend
     env: node
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
-    rootDir: backend
+    buildCommand: npm run install-backend
+    startCommand: node index.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -19,7 +18,7 @@ services:
       - key: AI_SERVICE_URL
         fromContext: ai_service_url
 
-  # 2. AI Service (Python)
+  # 2. AI Service (Python) - Deploying from ai_service folder
   - type: web
     name: shop-ez-ai
     env: python
@@ -27,11 +26,8 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     rootDir: ai_service
-    envVars:
-      - key: PORT
-        value: 10000
 
-  # 3. Frontend Service (Static Site)
+  # 3. Frontend Service (Static Site) - Deploying from frontend folder
   - type: static
     name: shop-ez-frontend
     env: static
