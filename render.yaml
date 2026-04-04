@@ -1,9 +1,11 @@
 services:
+  # 1. Backend Service
   - type: web
     name: shop-ez-backend
     env: node
-    buildCommand: npm run install-backend
-    startCommand: node index.js
+    plan: free
+    buildCommand: "npm install && cd backend && npm install"
+    startCommand: "node index.js"
     envVars:
       - key: MONGO_URI
         sync: false
@@ -16,23 +18,13 @@ services:
           type: web
           name: shop-ez-frontend
           property: host
-      - key: AI_SERVICE_URL
-        fromService:
-          type: web
-          name: shop-ez-ai
-          property: host
 
-  - type: web
-    name: shop-ez-ai
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    rootDir: ai_service
-
+  # 2. Frontend Service
   - type: web
     name: shop-ez-frontend
     runtime: static
-    buildCommand: npm install && npm run build
+    plan: free
+    buildCommand: "npm install && cd frontend && npm install && npm run build"
     staticPublishPath: dist
     rootDir: frontend
     envVars:
