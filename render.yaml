@@ -11,10 +11,18 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
+      - key: NODE_ENV
+        value: production
       - key: FRONTEND_URL
-        fromContext: frontend_url
+        fromService:
+          type: web
+          name: shop-ez-frontend
+          property: host
       - key: AI_SERVICE_URL
-        fromContext: ai_service_url
+        fromService:
+          type: web
+          name: shop-ez-ai
+          property: host
 
   # 2. AI Service
   - type: web
@@ -25,7 +33,7 @@ services:
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     rootDir: ai_service
 
-  # 3. Frontend Service (Fixed for Render Blueprint)
+  # 3. Frontend Service (Static Site)
   - type: web
     name: shop-ez-frontend
     runtime: static
@@ -35,23 +43,7 @@ services:
     rootDir: frontend
     envVars:
       - key: VITE_API_BASE_URL
-        fromContext: backend_url
-
-envVarGroups:
-  - name: shop-ez-configs
-    envVars:
-      - key: backend_url
         fromService:
+          type: web
           name: shop-ez-backend
-          type: web
-          property: host
-      - key: frontend_url
-        fromService:
-          name: shop-ez-frontend
-          type: web
-          property: host
-      - key: ai_service_url
-        fromService:
-          name: shop-ez-ai
-          type: web
           property: host
