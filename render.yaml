@@ -1,9 +1,7 @@
 services:
-  # 1. Backend Service
   - type: web
     name: shop-ez-backend
     env: node
-    plan: free
     buildCommand: npm run install-backend
     startCommand: node index.js
     envVars:
@@ -24,20 +22,16 @@ services:
           name: shop-ez-ai
           property: host
 
-  # 2. AI Service
   - type: web
     name: shop-ez-ai
     env: python
-    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     rootDir: ai_service
 
-  # 3. Frontend Service (Static Site)
   - type: web
     name: shop-ez-frontend
     runtime: static
-    plan: free
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     rootDir: frontend
