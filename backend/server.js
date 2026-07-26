@@ -62,7 +62,7 @@ app.use(cors({
 
 app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
-    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
+    contentSecurityPolicy: false,
 }));
 app.use(morgan('dev'));
 
