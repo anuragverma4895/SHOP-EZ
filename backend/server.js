@@ -77,9 +77,26 @@ app.use('/api/admin/orders', orderRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/banners', bannerRoutes);
 
-app.get('/', (req, res) => {
-    res.send('SHOP-EZ API is running...');
-});
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+    // Serve static files from frontend/dist
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+    // Any route that is NOT /api/* will serve index.html (SPA routing)
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '../frontend/dist/index.html'));
+    });
+} else {
+    app.get('/', (req, res) => {
+        res.send('SHOP-EZ API is running...');
+    });
+}
 
 // Error Middleware
 app.use(notFound);
