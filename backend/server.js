@@ -39,10 +39,15 @@ app.use(cookieParser());
 
 // CORS configuration — allow frontend origins in dev and production
 // CORS configuration
+let frontendUrl = process.env.FRONTEND_URL;
+if (frontendUrl && frontendUrl.endsWith('/')) {
+    frontendUrl = frontendUrl.slice(0, -1);
+}
+
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
-    process.env.FRONTEND_URL,
+    frontendUrl,
 ].filter(Boolean);
 
 app.use(cors({
