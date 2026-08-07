@@ -48,9 +48,11 @@ const SimilarProducts = ({ productId }) => {
                 // First get all products to send to AI service
                 const { data } = await axios.get('/api/products?page=1');
 
+                const productsList = Array.isArray(data?.products) ? data.products : [];
+
                 const payload = {
                     product_id: productId,
-                    all_products: data.products.map(p => ({
+                    all_products: productsList.map(p => ({
                         product_id: p._id,
                         name: p.name || '',
                         category: p.category || '',
@@ -63,7 +65,7 @@ const SimilarProducts = ({ productId }) => {
                 const aiResponse = await axios.post('/api/ai/similar-products', payload);
 
                 const recommendedIds = aiResponse.data.recommendations || [];
-                const finalProducts = data.products.filter(p => recommendedIds.includes(p._id));
+                const finalProducts = productsList.filter(p => recommendedIds.includes(p._id));
 
                 setSimilarProducts(finalProducts);
                 setLoading(false);

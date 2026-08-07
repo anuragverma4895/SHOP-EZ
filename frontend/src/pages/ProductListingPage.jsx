@@ -35,7 +35,8 @@ const ProductListingPage = () => {
             try {
                 const { data } = await axios.get('/api/products?page=1');
 
-                const liveProducts = data.products.map(p => ({
+                const productsList = Array.isArray(data?.products) ? data.products : [];
+                const liveProducts = productsList.map(p => ({
                     ...p,
                     rating: p.rating || 4.5,
                     discountPrice: p.price,

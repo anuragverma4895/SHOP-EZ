@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Star } from 'lucide-react';
 import axios from 'axios';
+import { getAuthConfig } from '../utils/storage';
 
 const AIProductCard = ({ product }) => (
     <Link to={`/product/${product._id}`} className="block">
@@ -46,10 +47,7 @@ const CustomersAlsoBought = ({ productId }) => {
         const fetchCollab = async () => {
             try {
                 // Need auth token for orders API
-                const userInfo = localStorage.getItem('userInfo');
-                const config = userInfo ? {
-                    headers: { Authorization: `Bearer ${JSON.parse(userInfo).token}` }
-                } : {};
+                const config = getAuthConfig();
 
                 // Get all orders and products
                 const [{ data: orderData }, { data: productData }] = await Promise.all([
@@ -57,12 +55,14 @@ const CustomersAlsoBought = ({ productId }) => {
                     axios.get('/api/products?page=1')
                 ]);
 
+                const productsList = Array.isArray(productData?.products) ? productData.products : [];
+
                 // Construct fake order history if API fails/empty for demo purposes, else use real
-                let ordersList = orderData;
+                let ordersList = Array.isArray(orderData) ? orderData : [];
                 if (!ordersList || ordersList.length === 0) {
                     // Provide some synthetic order data for AI to chew on if db is empty
                     ordersList = [
-                        { _id: 'o1', user: 'u1', orderItems: [{ product: productId }, { product: productData.products[0]?._id }] }
+                        { _id: 'o1', user: 'u1', orderItems: [{ product: productId }, { product: productsList[0]?._id }] }
                     ];
                 }
 
@@ -79,7 +79,7 @@ const CustomersAlsoBought = ({ productId }) => {
                 const aiResponse = await axios.post('/api/ai/customers-also-bought', payload);
 
                 const recommendedIds = aiResponse.data.recommendations || [];
-                const finalProducts = productData.products.filter(p => recommendedIds.includes(p._id));
+                const finalProducts = productsList.filter(p => recommendedIds.includes(p._id));
 
                 setAlsoBoughtProducts(finalProducts);
                 setLoading(false);

@@ -18,7 +18,8 @@ const HomePage = () => {
                 const { data } = await axios.get('/api/products?page=1&sort=newest');
 
                 // Map API products for ProductRow compatibility
-                const liveProducts = data.products.map(p => ({
+                const productsList = Array.isArray(data?.products) ? data.products : [];
+                const liveProducts = productsList.map(p => ({
                     ...p,
                     id: p._id,
                     original: p.price,

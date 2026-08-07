@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { getStoredUser, removeStorageValue, writeJsonStorage } from '../utils/storage';
 
 const AuthContext = createContext();
 
@@ -27,11 +28,10 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         // Check if user is stored in local storage
-        const storedUser = localStorage.getItem('userInfo');
+        const storedUser = getStoredUser();
         if (storedUser) {
-            const parsed = JSON.parse(storedUser);
-            setUser(parsed);
-            setupAxiosAuth(parsed);
+            setUser(storedUser);
+            setupAxiosAuth(storedUser);
         }
         setLoading(false);
 
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
                 if (error.response && error.response.status === 401) {
                     console.log("Interceptor caught 401, logging out...");
                     setUser(null);
-                    localStorage.removeItem('userInfo');
+                    removeStorageValue('userInfo');
                     setupAxiosAuth(null);
                 }
                 return Promise.reject(error);
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const { data } = await axios.post('/api/users/login', { email, password });
             setUser(data);
-            localStorage.setItem('userInfo', JSON.stringify(data));
+            writeJsonStorage('userInfo', data);
             setupAxiosAuth(data);
             toast.success('Logged in successfully');
             return true;
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const { data } = await axios.post('/api/users', { name, email, password });
             setUser(data);
-            localStorage.setItem('userInfo', JSON.stringify(data));
+            writeJsonStorage('userInfo', data);
             setupAxiosAuth(data);
             toast.success('Registered successfully');
             return true;
@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }) => {
             console.error('Logout API failed:', error);
         } finally {
             setUser(null);
-            localStorage.removeItem('userInfo');
+            removeStorageValue('userInfo');
             setupAxiosAuth(null);
             toast.success('Logged out');
         }
@@ -97,7 +97,7 @@ export const AuthProvider = ({ children }) => {
 
     const updateUser = (data) => {
         setUser(data);
-        localStorage.setItem('userInfo', JSON.stringify(data));
+        writeJsonStorage('userInfo', data);
         setupAxiosAuth(data);
     };
 

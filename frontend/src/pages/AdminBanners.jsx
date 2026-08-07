@@ -4,6 +4,7 @@ import { LayoutDashboard, Package, ShoppingCart, Users, Edit, Trash2, Plus, Imag
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { getAuthConfig } from '../utils/storage';
 
 const Sidebar = ({ currentPath }) => {
     const links = [
@@ -57,14 +58,10 @@ const AdminBanners = () => {
 
     const fetchBanners = async () => {
         try {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('userInfo')).token}`
-                }
-            };
+            const config = getAuthConfig();
             setLoading(true);
             const { data } = await axios.get('/api/banners', config);
-            setBanners(data);
+            setBanners(Array.isArray(data) ? data : []);
             setLoading(false);
         } catch (error) {
             toast.error('Failed to fetch banners');
@@ -104,7 +101,7 @@ const AdminBanners = () => {
             const config = {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('userInfo')).token}`
+                    ...getAuthConfig().headers,
                 }
             };
 
@@ -126,11 +123,7 @@ const AdminBanners = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this banner?')) {
             try {
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${JSON.parse(localStorage.getItem('userInfo')).token}`
-                    }
-                };
+                const config = getAuthConfig();
                 await axios.delete(`/api/banners/${id}`, config);
                 toast.success('Banner deleted');
                 fetchBanners();

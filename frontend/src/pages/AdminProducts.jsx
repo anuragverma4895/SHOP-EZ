@@ -4,6 +4,7 @@ import { LayoutDashboard, Package, ShoppingCart, Users, Edit, Trash2, Plus, Sear
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { getAuthConfig } from '../utils/storage';
 
 const Sidebar = ({ currentPath }) => {
     const links = [
@@ -63,7 +64,7 @@ const AdminProducts = () => {
         try {
             setLoading(true);
             const { data } = await axios.get('/api/products?page=1&sort=newest'); // Backend pagination is built-in
-            setProducts(data.products);
+            setProducts(Array.isArray(data?.products) ? data.products : []);
             setLoading(false);
         } catch (error) {
             toast.error('Failed to fetch products');
@@ -105,7 +106,7 @@ const AdminProducts = () => {
             const config = {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('userInfo')).token}`
+                    ...getAuthConfig().headers,
                 }
             };
 
@@ -129,11 +130,7 @@ const AdminProducts = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${JSON.parse(localStorage.getItem('userInfo')).token}`
-                    }
-                };
+                const config = getAuthConfig();
                 await axios.delete(`/api/admin/products/${id}`, config);
                 toast.success('Product deleted');
                 fetchProducts();

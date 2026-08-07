@@ -1,27 +1,21 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { readJsonStorage, removeStorageValue, writeJsonStorage } from '../utils/storage';
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState([]);
-
-    // Load from local storage initially
-    useEffect(() => {
-        const savedCart = localStorage.getItem('cartItems');
-        if (savedCart) {
-            setCartItems(JSON.parse(savedCart));
-        }
-
-        // In a real app we might want to sync with backend here if user is logged in
-    }, []);
+    const [cartItems, setCartItems] = useState(() => {
+        const savedCart = readJsonStorage('cartItems', []);
+        return Array.isArray(savedCart) ? savedCart : [];
+    });
 
     // Save to local storage whenever cart changes
     useEffect(() => {
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        writeJsonStorage('cartItems', cartItems);
     }, [cartItems]);
 
     const addToCart = async (product, qty, size) => {
@@ -39,7 +33,7 @@ export const CartProvider = ({ children }) => {
             setCartItems([...cartItems, {
                 product: product._id,
                 name: product.name,
-                image: product.image || product.images[0],
+                image: product.image || product.images?.[0] || '',
                 price: product.discountPrice || product.price,
                 qty: Number(qty),
                 size
@@ -74,7 +68,7 @@ export const CartProvider = ({ children }) => {
 
     const clearCart = () => {
         setCartItems([]);
-        localStorage.removeItem('cartItems');
+        removeStorageValue('cartItems');
     };
 
     return (
