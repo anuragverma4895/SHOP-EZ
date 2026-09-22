@@ -13,7 +13,7 @@ services:
     name: shop-ez-backend
     env: node
     plan: free
-    buildCommand: "npm install && cd backend && npm install"
+    buildCommand: "npm install && cd backend && npm install && cd ../frontend && npm install && npm run build"
     startCommand: "node index.js"
     envVars:
       - key: MONGO_URI
