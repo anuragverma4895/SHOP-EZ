@@ -79,6 +79,7 @@ app.use('/api/banners', bannerRoutes);
 
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -90,7 +91,12 @@ if (process.env.NODE_ENV === 'production') {
 
     // Any route that is NOT /api/* will serve index.html (SPA routing)
     app.get(/^(?!\/api).*/, (req, res) => {
-        res.sendFile(path.resolve(__dirname, '../frontend/dist/index.html'));
+        const indexPath = path.resolve(__dirname, '../frontend/dist/index.html');
+        if (fs.existsSync(indexPath)) {
+            res.sendFile(indexPath);
+        } else {
+            res.status(404).send('Frontend build not found. Please ensure you have run "npm run build".');
+        }
     });
 } else {
     app.get('/', (req, res) => {
