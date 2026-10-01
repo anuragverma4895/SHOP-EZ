@@ -37,26 +37,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// CORS configuration — allow frontend origins in dev and production
-// CORS configuration
-let frontendUrl = process.env.FRONTEND_URL;
-if (frontendUrl && frontendUrl.endsWith('/')) {
-    frontendUrl = frontendUrl.slice(0, -1);
-}
-
-const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    frontendUrl,
-].filter(Boolean);
-
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        }
-        return callback(new Error('Not allowed by CORS'));
-    },
+    origin: true,
     credentials: true,
 }));
 
@@ -84,23 +66,19 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
+// Serve frontend if dist directory exists
+const distPath = path.join(__dirname, '../frontend/dist');
+if (fs.existsSync(distPath)) {
     // Serve static files from frontend/dist
-    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+    app.use(express.static(distPath));
 
     // Any route that is NOT /api/* will serve index.html (SPA routing)
     app.get(/^(?!\/api).*/, (req, res) => {
-        const indexPath = path.resolve(__dirname, '../frontend/dist/index.html');
-        if (fs.existsSync(indexPath)) {
-            res.sendFile(indexPath);
-        } else {
-            res.status(404).send('Frontend build not found. Please ensure you have run "npm run build".');
-        }
+        res.sendFile(path.resolve(distPath, 'index.html'));
     });
 } else {
     app.get('/', (req, res) => {
-        res.send('SHOP-EZ API is running...');
+        res.send('SHOP-EZ API is running... (Frontend build not found)');
     });
 }
 
